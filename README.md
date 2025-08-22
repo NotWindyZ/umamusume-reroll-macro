@@ -8,6 +8,9 @@ A GUI-based automation macro for **Uma Musume Pretty Derby**
 [![Issues](https://img.shields.io/github/issues/NotWindyZ/umamusume-reroll-macro?style=for-the-badge)](https://github.com/NotWindyZ/umamusume-reroll-macro/issues)
 [![Made with Python](https://img.shields.io/badge/Made%20with-Python-3776AB?style=for-the-badge&logo=python)](https://www.python.org/)
 
+[![GitHub stars](https://img.shields.io/github/stars/NotWindyZ/umamusume-reroll-macro?style=for-the-badge&color=yellow)](https://github.com/NotWindyZ/umamusume-reroll-macro/stargazers)
+[![Discord](https://img.shields.io/badge/Discord-%40notwindybee__-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/users/youridhere)
+
 ## 📥 Download
 
 👉 [**Download the latest release here**](https://github.com/NotWindyZ/umamusume-reroll-macro/releases)
