@@ -69,8 +69,10 @@ By default, the macro uses CPU for EasyOCR. This is fine for most users, but it 
 If you have an **NVIDIA GPU with CUDA support**, you can install **PyTorch with CUDA** inside the embedded Python environment to make OCR much faster.
 
 ⚠️ **Warning:** Installing GPU support will download about **7 GB** of data.
-Just locate the bat file: **`install-ocr-gpu-support.bat`**
 
+> Just locate the bat file: **`install-ocr-gpu-support.bat`**
+
+> After everything about gpu support for macro is finished, make sure to close and reopen the macro to take affect!
 ---
 ## 🛠️ Troubleshooting & Common Problems
 
