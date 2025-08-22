@@ -105,15 +105,16 @@ If you have an **NVIDIA GPU with CUDA support**, you can install **PyTorch with 
   - If missing, create a `.bat` file with the following content in the macro folder:
     ```bat
     @echo off
-    REM === Navigate to the folder where this script is located ===
+    REM === Always go into MACRO_HERE_OPEN_IT folder first ===
     cd /d "%~dp0"
     
-    REM === Run main.py ===
-    python.exe main.py
+    REM === Run main.py with the root python.exe (one level up) ===
+    "..\python.exe" "main.py"
     
     echo.
     echo Macro finished running.
     pause
+
     ```
   - Then create a shortcut to this `.bat` on your desktop for easy access.
 
