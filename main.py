@@ -10,6 +10,7 @@ import time
 import traceback
 import enum
 from functools import wraps
+from tkinter import PhotoImage
 
 from collections import Counter
 from logging.handlers import RotatingFileHandler
@@ -62,6 +63,102 @@ def macro_active_only(func):
         return func(self, *args, **kwargs)
     return wrapper
 
+def create_default_config():
+    config = configparser.ConfigParser()
+    config.optionxform = str
+    config['WEBHOOK'] = {
+        'url': 'YOUR_DISCORD_WEBHOOK_URL_HERE',
+        'ping_user_id': ''
+    }
+    config['CARDS'] = {
+        'card1': '318,112,31,31',
+        'card2': '497,115,34,29',
+        'card3': '679,116,34,27',
+        'card4': '407,317,34,28',
+        'card5': '590,314,32,31',
+        'card6': '316,522,34,29',
+        'card7': '498,523,36,28',
+        'card8': '678,517,36,36',
+        'card9': '409,723,31,30',
+        'card10': '591,726,32,28',
+    }
+    config['SSR_REROLL'] = {
+        'password': '',
+    }
+    config['MACRO_REROLL'] = {
+        'menu_list': '1835,1008',
+        'delete_row': '963,745',
+        'confirm_delete': '1098,708',
+    }
+    config['REGISTER_ACCOUNT'] = {
+        'terms_view': '1165,480',
+        'privacy_view': '1167,595',
+        'i_agree': '1100,772',
+        'country_change_btn': '1151,560',
+        'country_ok_btn': '1104,770',
+        'countrylist_ok_btn': '1083,709',
+        'age_input_box': '932,563',
+        'age_ok_btn': '1089,700',
+        'trainer_name_box': '983,488',
+        'register_btn': '962,705',
+    }
+    config['INGAME_MENU'] = {
+        'forward_icon': '901,1023',
+        'mini_gift_icon': '798,771',
+        'collect_all_btn': '673,1000',
+        'scout_menu_btn': '795,1027',
+        'support_card_banner_btn': '846,661',
+        'x10_scout_btn': '744,859',
+        'confirm_scout_btn': '715,711',
+        'scout_again_btn': '706,1011',
+        'title_screen_btn': '1506,907',
+        'banner_right_arrow_btn': '923,655',
+        'support_card_banner_pos': '2',
+    }
+    config['SAFE_CHECK'] = {
+        'conn_error_region': '855,333,217,33',
+        'title_screen_btn': '860,703',
+        'scout_result_region': '470,41,160,33',
+        'found_ssr_card_name': '474,128,152,25',
+        'found_ssr_card_epithet': '477,100,206,29',
+        'ssr_misletter': 'SS, SS1, SSH, S5R',
+    }
+    config['REROLL_SETTINGS'] = {
+        'carats': '19450',
+        'general_delay': '860',
+        'theme': 'simplex',
+    }
+    config['LINK_ACCOUNT'] = {
+        'profile_btn': '1486,167',
+        'copy_trainer_id_btn': '801,335',
+        'data_link_btn': '1513,736',
+        'data_link_confirm_btn': '683,684',
+        'set_link_password_btn': '759,616',
+        'password_input_box': '526,452',
+        'password_confirm_input_box': '552,567',
+        'privacy_policy_tick_box': '364,698',
+        'next_btn': '561,1013',
+        'ok_btn': '684,773',
+    }
+    with open(CONFIG_FILE, 'w') as configfile:
+        config.write(configfile)
+    return config
+
+def capture_and_resize_screenshot(filename_prefix):
+    screenshot_dir = os.path.join(os.getcwd(), 'umapyoi_screenshots')
+    if not os.path.exists(screenshot_dir):
+        os.makedirs(screenshot_dir)
+    screenshot = ImageGrab.grab()
+    width = 640
+    w, h = screenshot.size
+    if w > width:
+        new_h = int(h * (width / w))
+        screenshot = screenshot.resize((width, new_h), Image.LANCZOS)
+    timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+    screenshot_path = os.path.join(screenshot_dir, f'{filename_prefix}_{timestamp}.png')
+    screenshot.save(screenshot_path, 'PNG')
+    return screenshot_path
+
 class SnippingWidget:
     def __init__(self, root, callback=None, slot_key=None):
         self.root = root
@@ -76,7 +173,7 @@ class SnippingWidget:
     def start(self):
         self.snipping_window = Toplevel(self.root)
         self.snipping_window.attributes('-fullscreen', True)
-        self.snipping_window.attributes('-alpha', 0.5)  # Slightly less transparent for better contrast
+        self.snipping_window.attributes('-alpha', 0.5)
         self.snipping_window.configure(bg="lightblue")
         self.snipping_window.lift()
         self.snipping_window.focus_force()
@@ -147,16 +244,13 @@ def load_templates():
         for path in glob.glob(pattern):
             img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
             if img is not None:
-                # Remove alpha if present
-                if img.shape[-1] == 4:
-                    img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+                if img.shape[-1] == 4: img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
                 templates[rarity].append(img)
                 template_files[rarity].append(os.path.basename(path))
     return templates
 
 def preprocess_image(img):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # Slight blur to reduce noise/particles
     gray = cv2.GaussianBlur(gray, (3, 3), 0)
     return gray
 
@@ -168,7 +262,7 @@ def detect_rarity_in_row(region_img, templates, threshold=0.7):
         for template in tlist:
             template_gray = preprocess_image(template)
             if region_gray.shape[0] < template_gray.shape[0] or region_gray.shape[1] < template_gray.shape[1]:
-                continue  # Skip if template is larger than region
+                continue
             res = cv2.matchTemplate(region_gray, template_gray, cv2.TM_CCOEFF_NORMED)
             min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
             if max_val > best_val:
@@ -180,9 +274,17 @@ def detect_rarity_in_row(region_img, templates, threshold=0.7):
 class UMAPanel:
     def __init__(self, root):
         self.root = root
-        self.root.title('Uma Musume Reroll Macro (that one tea drinker)')
-        self.root.geometry('530x360')
+        self.root.title('Uma Musume Reroll Macro (v1.0-beta)')
+        self.root.geometry('530x300')
         style = Style(theme='cosmo')
+
+        try:
+            icon_path = os.path.join('misc', 'uma_icon.png')
+            if os.path.exists(icon_path):
+                self.root.iconphoto(False, PhotoImage(file=icon_path))
+        except Exception:
+            pass
+
         # --- Webhook and Ping User ID StringVars (fix AttributeError) ---
         config = load_config()
         webhook_url = ''
@@ -336,7 +438,7 @@ class UMAPanel:
 
         # Webhook Tab
         Label(webhook_frame, text='Discord Webhook URL:').pack(pady=(20, 5))
-        url_entry = Entry(webhook_frame, textvariable=self.webhook_url, width=50)
+        url_entry = Entry(webhook_frame, textvariable=self.webhook_url, width=50, show='*')
         url_entry.pack(pady=5)
         url_entry.bind('<FocusOut>', lambda e: save_config(self.webhook_url.get(), self.ping_user_id.get(), self.card_coords))
         Label(webhook_frame, text='Ping User ID (optional):').pack(pady=(10, 5))
@@ -377,20 +479,50 @@ class UMAPanel:
         delay_entry.pack(side='left', padx=5)
         delay_entry.bind('<FocusOut>', save_carats_and_delay)
         # Reroll Tab - Assign Card Regions in a separate window
-        Label(reroll_frame, text='Card region assignment is now in a separate window.').pack(pady=(10, 5))
-        Button(reroll_frame, text='Assign Card Regions...', command=self.open_assign_window).pack(pady=5)
-        Button(reroll_frame, text="Detect SR/SSR", command=self.run_rarity_detection).pack(pady=5)
-        Button(reroll_frame, text="SSR Reroll Options", command=self.open_ssr_reroll_options).pack(pady=5)
-        Button(reroll_frame, text='Macro Reroll Clicks (Assign in here)', command=self.open_reroll_clicks_window).pack(pady=5)
-        Button(reroll_frame, text='Macro Safe Check', command=self.open_safe_check_window).pack(pady=5)
+        # --- 2x2 button grid layout ---
+        button_grid = Frame(reroll_frame)
+        button_grid.pack(pady=5)
+        # Left column
+        btn_assign_card = Button(button_grid, text='Assign Card Regions...', command=self.open_assign_window, width=22)
+        btn_assign_card.grid(row=0, column=0, padx=5, pady=5)
+        btn_macro_reroll = Button(button_grid, text='Macro Reroll Clicks', command=self.open_reroll_clicks_window, width=22)
+        btn_macro_reroll.grid(row=1, column=0, padx=5, pady=5)
+        # Right column
+        btn_ssr_options = Button(button_grid, text='SSR Reroll Options', command=self.open_ssr_reroll_options, width=22)
+        btn_ssr_options.grid(row=0, column=1, padx=5, pady=5)
+        btn_safe_check = Button(button_grid, text='Macro Safe Check', command=self.open_safe_check_window, width=22)
+        btn_safe_check.grid(row=1, column=1, padx=5, pady=5)
 
         notebook.add(webhook_frame, text='Webhook')
         notebook.add(reroll_frame, text='Reroll')
 
         control_frame = Frame(root)
         control_frame.pack(pady=10)
-        Button(control_frame, text='Start Macro', command=self.on_start).pack(side='left', padx=10)
-        Button(control_frame, text='Stop Macro', command=self.on_stop).pack(side='left', padx=10)
+        Button(control_frame, text='Start Macro (F1)', command=self.on_start).pack(side='left', padx=10)
+        Button(control_frame, text='Stop Macro (F3)', command=self.on_stop).pack(side='left', padx=10)
+        # Theme dropdown with label
+        theme_label = Label(control_frame, text='Theme:')
+        theme_label.pack(side='left', padx=(40, 2))
+        self.style = style
+        config_theme = config.get('REROLL_SETTINGS', 'theme', fallback=style.theme.name)
+        theme_var = StringVar(value=config_theme)
+        theme_names = style.theme_names()
+        theme_dropdown = tkttk.Combobox(control_frame, values=theme_names, textvariable=theme_var, width=16, state='readonly')
+        theme_dropdown.pack(side='left', padx=5)
+        try:
+            style.theme_use(config_theme)
+        except Exception:
+            pass
+        def on_theme_change(event=None):
+            selected = theme_var.get()
+            style.theme_use(selected)
+            config = load_config()
+            if not config.has_section('REROLL_SETTINGS'):
+                config.add_section('REROLL_SETTINGS')
+            config.set('REROLL_SETTINGS', 'theme', selected)
+            with open(CONFIG_FILE, 'w') as f:
+                config.write(f)
+        theme_dropdown.bind('<<ComboboxSelected>>', on_theme_change)
 
         print('Loading OCR engine (EasyOCR)... This may take a few seconds.')
         self.ocr_reader = easyocr.Reader(['en'], gpu=True)
@@ -624,7 +756,7 @@ class UMAPanel:
     def open_reroll_clicks_window(self):
         assign_win = Toplevel(self.root)
         assign_win.title('Assign Macro Reroll Clicks')
-        assign_win.geometry('420x600')
+        assign_win.geometry('420x520')
         assign_win.transient(self.root)
         # Page navigation state
         pages = [
@@ -814,11 +946,11 @@ class UMAPanel:
         # --- Fixed bottom buttons ---
         btn_frame = Frame(assign_win)
         btn_frame.pack(side='bottom', pady=10, anchor='s')
-        Button(btn_frame, text='Save Reroll Clicks', command=self.save_reroll_clicks).pack(side='left', padx=5)
-        Button(btn_frame, text='Save Register Account Clicks', command=self.save_register_clicks).pack(side='left', padx=5)
-        Button(btn_frame, text='Save In-Game Menu Clicks', command=self.save_ingame_menu_clicks).pack(side='left', padx=5)
-        Button(btn_frame, text='Save Link Account Clicks', command=self.save_link_account_clicks).pack(side='left', padx=5)
-        Button(btn_frame, text='Close', command=assign_win.destroy).pack(side='left', padx=5)
+        Button(btn_frame, text='Save Reroll Clicks', command=self.save_reroll_clicks, width=20).grid(row=0, column=0, padx=5, pady=3)
+        Button(btn_frame, text='Save Register Account Clicks', command=self.save_register_clicks, width=20).grid(row=0, column=1, padx=5, pady=3)
+        Button(btn_frame, text='Save In-Game Menu Clicks', command=self.save_ingame_menu_clicks, width=20).grid(row=1, column=0, padx=5, pady=3)
+        Button(btn_frame, text='Save Link Account Clicks', command=self.save_link_account_clicks, width=20).grid(row=1, column=1, padx=5, pady=3)
+        Button(btn_frame, text='Close', command=assign_win.destroy, width=42).grid(row=2, column=0, columnspan=2, padx=5, pady=3)
         # Show first page
         show_page(page_idx[0])
 
@@ -865,7 +997,7 @@ class UMAPanel:
     def open_safe_check_window(self):
         assign_win = Toplevel(self.root)
         assign_win.title('Assign Macro Safe Check')
-        assign_win.geometry('420x650')
+        assign_win.geometry('550x350')
         assign_win.transient(self.root)
         Label(assign_win, text='Assign Macro Safe Check:').pack(pady=(10, 5))
         # Load safe check clicks/regions
@@ -1047,12 +1179,12 @@ class UMAPanel:
         card_ocr_valid = [[] for _ in range(10)]
         for run in range(num_runs):
             if not self.is_macro_started: return [ [{'rarity': 'Unknown'} for _ in range(10)] ] if return_results else None
-            if run > 0:
-                time.sleep(1.85)
+            if run > 0: time.sleep(0.55)
             screenshot = ImageGrab.grab()
             screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
+            regions = []
+            valid_indices = []
             for i in range(10):
-                if not self.is_macro_started: return [ [{'rarity': 'Unknown'} for _ in range(10)] ] if return_results else None
                 slot_key = f'card{i+1}'
                 coords = self.card_coords.get(slot_key)
                 if not coords:
@@ -1060,9 +1192,12 @@ class UMAPanel:
                     card_template_results[i].append('Unknown')
                     card_ocr_raw[i].append('')
                     card_ocr_valid[i].append('')
+                    regions.append(None)
                     continue
                 x, y, w, h = coords
                 region = screenshot[y:y+h, x:x+w]
+                regions.append(region)
+                valid_indices.append(i)
                 region_gray = preprocess_image(region)
                 best_rarity = 'Unknown'
                 best_score = 0
@@ -1077,8 +1212,17 @@ class UMAPanel:
                             best_score = max_val
                             best_rarity = rarity
                 card_template_results[i].append(best_rarity)
+            # Batch OCR for all valid regions
+            batch_regions = [r for r in regions if r is not None]
+            batch_results = reader.readtext(batch_regions) if batch_regions else []
+            # EasyOCR returns a list of lists (one per image)
+            batch_idx = 0
+            for i in range(10):
+                if regions[i] is None:
+                    continue
                 ocr_valid = None
-                result = reader.readtext(region)
+                result = batch_results[batch_idx] if batch_idx < len(batch_results) else []
+                batch_idx += 1
                 text = ' '.join([r[1] for r in result]).upper().strip()
                 card_ocr_raw[i].append(text)
                 if any(label in text for label in ['SSR']):
@@ -1165,6 +1309,7 @@ class UMAPanel:
                     if not self.is_macro_started: break
 
                     self.register_user_account_loop()
+                    screenshot_path = capture_and_resize_screenshot('trainer_registered')
                     send_discord_notification(
                         message=f'Trainer registered successfully (Run {self.reroll_run_count})',
                         webhook_url=self.webhook_url.get(),
@@ -1173,7 +1318,8 @@ class UMAPanel:
                         description=None,
                         ping_on_embed=False,
                         ssr_details=None,
-                        is_summary=False
+                        is_summary=False,
+                        screenshot_path=screenshot_path
                     )
                     if not self.is_macro_started: break
                     time.sleep(1.8)
@@ -1183,6 +1329,7 @@ class UMAPanel:
                     if not self.is_macro_started: break
                     time.sleep(1.2)
                     # Open up scout menu webhook
+                    screenshot_path = capture_and_resize_screenshot('opening_scout_menu')
                     send_discord_notification(
                         message=f'Opening scout menu (Run {self.reroll_run_count})',
                         webhook_url=self.webhook_url.get(),
@@ -1191,7 +1338,8 @@ class UMAPanel:
                         description=None,
                         ping_on_embed=False,
                         ssr_details=None,
-                        is_summary=False
+                        is_summary=False,
+                        screenshot_path=screenshot_path
                     )
                     self.scout_reroll_loop()
                     time.sleep(15)
@@ -1203,7 +1351,8 @@ class UMAPanel:
                         description=None,
                         ping_on_embed=False,
                         ssr_details=None,
-                        is_summary=False
+                        is_summary=False,
+                        screenshot_path=capture_and_resize_screenshot('starting_run')
                     )
                 else:
                     print('Umamusume window not found!')
@@ -1364,7 +1513,7 @@ class UMAPanel:
                 time.sleep(4.5)
                 # Skip Tutorial (reuse age_ok_btn coordinates)
                 print(f'Clicking Skip Tutorial Button at ({x5}, {y5})')
-                for i in range(3):
+                for i in range(7):
                     if not self.is_macro_started: return
                     self.Global_MouseClick(x5, y5)
                     time.sleep(1.65)
@@ -1407,16 +1556,18 @@ class UMAPanel:
             x_gift, y_gift = map(int, mini_gift_icon.split(','))
             x_collect, y_collect = map(int, collect_all_btn.split(','))
             
+            screenshot_path = capture_and_resize_screenshot('collecting_carats')
             send_discord_notification(
-                        message=f'Collecting carats (Run {self.reroll_run_count})',
-                        webhook_url=self.webhook_url.get(),
-                        ping_user_id=self.ping_user_id.get(),
-                        status='carats',
-                        description=None,
-                        ping_on_embed=False,
-                        ssr_details=None,
-                        is_summary=False
-                    )
+                message=f'Collecting carats (Run {self.reroll_run_count})',
+                webhook_url=self.webhook_url.get(),
+                ping_user_id=self.ping_user_id.get(),
+                status='carats',
+                description=None,
+                ping_on_embed=False,
+                ssr_details=None,
+                is_summary=False,
+                screenshot_path=screenshot_path
+            )
             
             for i in range(30):
                 if not self.is_macro_started:
@@ -1899,6 +2050,7 @@ class UMAPanel:
                 self.Global_MouseClick(x_btn, y_btn)
                 time.sleep(1.2)
             # Send Discord notification with Trainer ID after linking (no SSR Cards Pulled field)
+            screenshot_path = capture_and_resize_screenshot('linked_account')
             send_discord_notification(
                 message=f'Linked account completed (Run {self.reroll_run_count})',
                 webhook_url=self.webhook_url.get(),
@@ -1907,7 +2059,8 @@ class UMAPanel:
                 description=f'**Trainer ID:** `{trainer_id}`' if trainer_id else None,
                 ping_on_embed=False,
                 ssr_details=None,
-                is_summary=False
+                is_summary=False,
+                screenshot_path=screenshot_path
             )
         except Exception as e:
             import sys, traceback
@@ -1943,7 +2096,14 @@ class UMAPanel:
                         for i in range(4):
                             self.Global_MouseClick(x_btn, y_btn)
                             time.sleep(1.2)
-                        send_discord_notification('Connection error detected! Macro stopped and returned to title screen.', self.webhook_url.get(), self.ping_user_id.get(), status=None)
+                        screenshot_path = capture_and_resize_screenshot('connection_error')
+                        send_discord_notification(
+                            'Connection error detected! Macro stopped and returned to title screen.',
+                            self.webhook_url.get(),
+                            self.ping_user_id.get(),
+                            status=None,
+                            screenshot_path=screenshot_path
+                        )
                         break
                 except Exception as e:
                     print(f'[Failsafe] Error in connection error check: {e}')
@@ -2036,74 +2196,6 @@ def rotate_accounts_met_log():
                 shutil.move(prev, next)
         shutil.move('met_required_accounts.txt', 'met_required_accounts.txt.1')
 
-def create_default_config():
-    config = configparser.ConfigParser()
-    config.optionxform = str
-    config['WEBHOOK'] = {
-        'url': 'YOUR_DISCORD_WEBHOOK_URL_HERE',
-        'ping_user_id': ''
-    }
-    config['REROLL_SETTINGS'] = {
-        'carats': '0',
-        'general_delay': '800'
-    }
-    config['SSR_REROLL'] = {
-        'password': ''
-    }
-    config['INGAME_MENU'] = {
-        'forward_icon': '0,0',
-        'mini_gift_icon': '0,0',
-        'collect_all_btn': '0,0',
-        'scout_menu_btn': '0,0',
-        'support_card_banner_btn': '0,0',
-        'x10_scout_btn': '0,0',
-        'confirm_scout_btn': '0,0',
-        'scout_again_btn': '0,0',
-        'title_screen_btn': '0,0',
-        'banner_right_arrow_btn': '0,0',
-        'support_card_banner_pos': '0'
-    }
-    config['SAFE_CHECK'] = {
-        'conn_error_region': '0,0,0,0',
-        'title_screen_btn': '0,0',
-        'scout_result_region': '0,0,0,0',
-        'found_ssr_card_name': '0,0,0,0',
-        'found_ssr_card_epithet': '0,0,0,0',
-        'ssr_misletter': ''
-    }
-    config['CARDS'] = {f'card{i+1}': '0,0,0,0' for i in range(10)}
-    config['REGISTER_ACCOUNT'] = {
-        'terms_view': '0,0',
-        'privacy_view': '0,0',
-        'i_agree': '0,0',
-        'country_change_btn': '0,0',
-        'country_ok_btn': '0,0',
-        'countrylist_ok_btn': '0,0',
-        'age_input_box': '0,0',
-        'age_ok_btn': '0,0',
-        'trainer_name_box': '0,0',
-        'register_btn': '0,0'
-    }
-    config['MACRO_REROLL'] = {
-        'menu_list': '0,0',
-        'delete_row': '0,0',
-        'confirm_delete': '0,0'
-    }
-    config['LINK_ACCOUNT'] = {
-        'profile_btn': '0,0',
-        'next_btn': '0,0',
-        'copy_trainer_id_btn': '0,0',
-        'data_link_btn': '0,0',
-        'data_link_confirm_btn': '0,0',
-        'set_link_password_btn': '0,0',
-        'password_input_box': '0,0',
-        'password_confirm_input_box': '0,0',
-        'privacy_policy_tick_box': '0,0',
-        'ok_btn': '0,0'
-    }
-    with open(CONFIG_FILE, 'w') as configfile:
-        config.write(configfile)
-    return config
 
 if __name__ == '__main__':
     root = Tk()
