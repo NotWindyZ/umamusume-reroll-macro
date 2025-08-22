@@ -226,9 +226,12 @@ If you have an **NVIDIA GPU with CUDA support**, you can install **PyTorch with 
   - Double-check your Discord webhook URL.
 
 - **Can't find `start_macro.bat`?**  
-  - If missing, create a `.bat` file with the following content in the macro folder:
+  - If missing, create a `.bat` file with the following content in the "MACRO_HERE_OPEN_IT" folder:
     ```bat
     @echo off
+    REM === Disable QuickEdit Mode for current CMD session ===
+    REG ADD "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul 2>&1
+    
     REM === Always go into MACRO_HERE_OPEN_IT folder first ===
     cd /d "%~dp0"
     
