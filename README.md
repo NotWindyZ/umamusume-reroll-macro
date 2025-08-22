@@ -15,7 +15,7 @@ A GUI-based automation macro for **Uma Musume Pretty Derby**
 
 👉 [**Download the latest release here**](https://github.com/NotWindyZ/umamusume-reroll-macro/releases)
 
-Simply extract the folder, then run `start_macro.bat`. No Python installation required! For further instruction please ahead to "🚀 How to Use" section!
+Simply extract the folder, then run `start_macro.bat` (inside the MACRO_HERE_OPEN_IT folder). No Python installation required! For further instruction please ahead to "🚀 How to Use" section!
 
 ---
 
@@ -43,8 +43,8 @@ Simply extract the folder, then run `start_macro.bat`. No Python installation re
 
 1. **Extract the release folder** anywhere you like.
 2. **Start the macro:**
-   - Double-click `start_macro.bat` (recommended)
-   - _Tip: Create a desktop shortcut to `start_macro.bat` for quick access!_
+   - Double-click `start_macro.bat` (located in "MACRO_HERE_OPEN_IT" folder)
+   - _Tip: Create a desktop shortcut to `start_macro.bat` for quick access!_ (RECOMMENDED)
 3. The macro GUI will open. Assign all required regions and clicks using the GUI tabs:
    - **Card regions** (for rarity detection)
    - **Macro reroll clicks**
@@ -79,7 +79,7 @@ If you have an **NVIDIA GPU with CUDA support**, you can install **PyTorch with 
 
 ⚠️ **Warning:** Installing GPU support will download about **7 GB** of data.
 
-> Just locate the bat file: **`install-ocr-gpu-support.bat`**
+> Just locate the bat file: **`install-ocr-gpu-support.bat`** (located in "MACRO_HERE_OPEN_IT" folder)
 
 > After everything about gpu support for macro is finished, make sure to close and reopen the macro to take affect!
 ---
