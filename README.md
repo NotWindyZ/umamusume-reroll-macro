@@ -60,6 +60,130 @@ Simply extract the folder, then run `start_macro.bat` (inside the MACRO_HERE_OPE
    - Press `F1` to start, `F3` to stop, or use the GUI buttons.
 
 ---
+## Macro Assignment Tutorial (IMPORTANT!!!!!!!!!!)
+Go to "Reroll" tab of the macro (Make sure you have to be on fullscreen mode before doing this!!)
+
+---
+
+### Section 1: "Macro Reroll Clicks"
+For the "Reroll" section, this only has 3 things to assign:
+
+<p align="center">
+  <img src="https://i.postimg.cc/G23DcxL2/image.png" width="600" />
+  <br>
+  <sub><b>Step 1.1:</b> Menu List button should be at bottom right at the start menu → assign it.</sub>
+</p>
+
+<p align="center">
+  <img src="https://i.postimg.cc/hPCSJFLc/image.png" width="600" />
+  <br>
+  <sub><b>Step 1.2:</b> "Delete User Data" → choose the one that says "Delete User Data".</sub>
+</p>
+
+<p align="center">
+  <img src="https://i.postimg.cc/GhRQ4Vc7/image.png" width="600" />
+  <br>
+  <sub><b>Step 1.3:</b> Confirm button for delete data.</sub>
+</p>
+
+<p align="center">
+  <img src="https://i.postimg.cc/d0LqY5pn/image.png" width="400" />
+  <br>
+  <sub><b>Step 1.3.1:</b> BTW you gotta click "Save Reroll", so keep this in mind and make sure to save every section you have done assigned!</sub>
+</p>
+
+So after you have done, click the right arrow to navigate to 'Register' section. And now you have to create your new fresh account by delete user data as step 1.3 (Make sure your main account has been LINKED BEFORE. I'm not taking responsible for your lost account as you aware of doing this!) 
+
+<p align="center">
+  <img src="https://i.postimg.cc/wjpj85Qs/image.png" width="600" />
+  <br>
+  <sub><b>Step 1.4:</b> Term Of Consent box.</sub>
+</p>
+
+<p align="center">
+  <img src="https://i.postimg.cc/pVKNNwGq/image.png" width="600" />
+  <img src="https://i.postimg.cc/Wz10nLhT/image.png" width="600" />
+  <br>
+  <sub><b>Step 1.5:</b> Country region assign</sub>
+</p>
+
+<p align="center">
+  <img src="https://i.postimg.cc/ZKhW4hTR/image.png" width="600" />
+  <br>
+  <sub><b>Step 1.6:</b> Age confirmation.</sub>
+</p>
+
+<p align="center">
+  <img src="https://i.postimg.cc/4NzBxZVF/image.png" width="600" />
+  <br>
+  <sub><b>Step 1.7:</b> Trainer Registration</sub>
+</p>
+
+<p align="center">
+  <img src="https://i.postimg.cc/J4rC8TBJ/image.png" width="350" />
+  <br>
+  <sub><b>Step 1.7.1:</b> Again... make sure to click save as the current section you are assigned (I won't mention this further so take note about it)</sub>
+</p>
+
+So after you have registered your test account, there will be an early intro
+
+<p align="center">
+  <img src="https://i.postimg.cc/fRS2QX5m/image.png" width="450" />
+  <br>
+  <sub><b>Step 2:</b> You can easily find the forward button (Similar to Youtube forward button) so please assign it when the intro is ongoing!</sub>
+</p>
+
+<p align="center">
+  <img src="https://i.postimg.cc/VLCnYRQf/image.png" width="400" />
+  <img src="https://i.postimg.cc/qMywm07x/image.png" width="450" />
+  <br>
+  <sub><b>Step 2.1:</b> Gift icons, Collect All button</sub>
+</p>
+
+<p align="center">
+  <img src="https://i.postimg.cc/zvR7YYF5/image.png" width="450" />
+  <br>
+  <sub><b>Step 2.2:</b> Scout menu</sub>
+</p>
+
+<p align="center">
+  <img src="https://i.postimg.cc/qRpH7QZ9/image.png" width="450" />
+  <br>
+  <sub><b>Step 2.3:</b> Support banner and "x10 Scout"</sub>
+</p>
+
+<p align="center">
+  <img src="https://i.postimg.cc/SxcPzC8q/image.png" width="450" />
+  <br>
+  <sub><b>Step 2.4:</b> Confirm Scout"</sub>
+</p>
+
+<p align="center">
+  <img src="https://i.postimg.cc/VvcgwHGC/image.png" width="450" />
+  <br>
+  <sub><b>Step 2.5:</b> Banner right arrow and title screen"</sub>
+</p>
+
+
+---
+
+### Section 2: "Assign Click"
+<p align="center">
+  <img src="https://i.imgur.com/example2.gif" width="400" />
+</p>
+
+---
+
+### Section 3: "Save Assigned Regions"
+<p align="center">
+  <img src="https://i.imgur.com/example3.gif" width="400" />
+</p>
+
+
+
+
+
+---
 
 ## 📝 Notes
 
