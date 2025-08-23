@@ -210,6 +210,7 @@ Now move on to the last one "Link Account" assign:
 ### Section 2: "Assign Card Regions"
 Now, close the window that assign those macro clicks, click "Assign Card Regions" and you should able to see card snipping window
 
+
 <p align="center">
   <img src="https://i.postimg.cc/bJSmdwv4/image.png" width="350" />
   <img src="https://i.postimg.cc/s2kp69V0/image.png" width="250" />
@@ -219,9 +220,8 @@ Now, close the window that assign those macro clicks, click "Assign Card Regions
 
 This is quite easy to do if you watch this short gif below and do it carefully to ensure the macro can be detect each card rarity correctly:
 
+[![1.gif](https://i.postimg.cc/nVyPj5NN/1.gif)](https://postimg.cc/jChXB8xh)
 
-
-Just do as the GIF, do a another test x10 scout and snip the card rarity from left to right and top to bottom one by one
 ---
 
 ### Section 3: "Save Assigned Regions"
