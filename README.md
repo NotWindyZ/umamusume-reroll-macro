@@ -218,21 +218,51 @@ Now, close the window that assign those macro clicks, click "Assign Card Regions
   <sub><b>Assign Card Regions</b></sub>
 </p>
 
-This is quite easy to do if you watch this short gif below and do it carefully to ensure the macro can be detect each card rarity correctly:
+This is quite easy to do if you watch this short video tutorial below and do it carefully to ensure the macro can be detect each card rarity correctly:
 
-[![1.gif](https://i.postimg.cc/nVyPj5NN/1.gif)](https://postimg.cc/jChXB8xh)
+
+
+https://github.com/user-attachments/assets/4edd979a-b2a8-4d4a-bf10-35a3c76a1228
+
 
 ---
 
-### Section 3: "Save Assigned Regions"
+### Section 3: "Macro Safe Check"
+This part is semi-important to allow macro can detect error & flaws during reroll.
+
+Close the previous "Assign Card Regions" window, click the "Macro Safe Check" one:
 <p align="center">
-  <img src="https://i.imgur.com/example3.gif" width="400" />
+  <img src="https://i.postimg.cc/j2Wx29wM/image.png" width="350" />
+  <img src="https://i.postimg.cc/Dzy8FxgM/image.png" width="350" />
+  <br>
+  <sub><b>"Macro Safe Check" window</b></sub>
 </p>
 
 
+There's rare chance that connection error would appear at anytime, it is the one:
+
+<p align="center">
+  <img src="https://i.postimg.cc/ZYD0mPBf/image.png" width="350" />
+  <br>
+  <sub><b>"Connection Error popup" window</b></sub>
+</p>
+
+
+Luckily, the connection error popup box shares the same as other one like those examples:
+
+<p align="center">
+  <img src="https://i.postimg.cc/j2KV0F6W/image.png" width="350" />
+  <img src="https://i.postimg.cc/k4QZcyr7/image.png" width="250" />
+</p>
+
+So we can assign the connection error with other regular popup without waiting it to be shown instead, so choose any one you wanted and make sure to follow this video:
 
 
 
+https://github.com/user-attachments/assets/6997a463-43c2-4871-a166-a33cee9fb57d
+
+
+(btw assign the connection error title screen button at the middle, mine one is a bit off mb...)
 ---
 
 ## 📝 Notes
