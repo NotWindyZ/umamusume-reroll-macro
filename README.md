@@ -125,7 +125,7 @@ So after you have done, click the right arrow to navigate to 'Register' section.
   <sub><b>Step 1.7.1:</b> Again... make sure to click save as the current section you are assigned (I won't mention this further so take note about it)</sub>
 </p>
 
-So after you have registered your test account, there will be an early intro
+So after you have registered your test account, there will be an early game intro:
 
 <p align="center">
   <img src="https://i.postimg.cc/fRS2QX5m/image.png" width="450" />
@@ -155,22 +155,60 @@ So after you have registered your test account, there will be an early intro
 <p align="center">
   <img src="https://i.postimg.cc/SxcPzC8q/image.png" width="450" />
   <br>
-  <sub><b>Step 2.4:</b> Confirm Scout"</sub>
+  <sub><b>Step 2.4:</b> Confirm Scout</sub>
 </p>
 
 <p align="center">
   <img src="https://i.postimg.cc/VvcgwHGC/image.png" width="450" />
   <br>
-  <sub><b>Step 2.5:</b> Banner right arrow and title screen"</sub>
+  <sub><b>Step 2.5:</b> Banner right arrow and title screen (Support card banner position click by telling how many click it click the in game right arrow to navigate to support card banner)</sub>
 </p>
 
+<p align="center">
+  <img src="https://i.postimg.cc/Ls8rN0FH/image.png" width="450" />
+  <br>
+  <sub><b>Step 2.6:</b> Now do one x10 scout and assign for the "Scout Again" button</sub>
+</p>
+
+<p align="center">
+  <img src="https://i.postimg.cc/VsnHBc0q/image.png" width="450" />
+  <br>
+  <sub><b>Step 2.6.1:</b> Save "In-game" assign click (lasty of last I swear...)</sub>
+</p>
+
+Now move on to the last one "Link Account" assign:
+
+<p align="center">
+  <img src="https://i.postimg.cc/7h93sXkk/image.png" width="450" />
+  <img src="https://i.postimg.cc/VN0Ffjjq/image.png" width="450" />
+  <br>
+  <sub><b>Step 3:</b> Profile button and the profile next button (it should be appear when you open the profile first time)</sub>
+</p>
+
+<p align="center">
+  <img src="https://i.postimg.cc/NjS1z5W5/image.png" width="450" />
+  <img src="https://i.postimg.cc/52YzLf61/image.png" width="450" />
+  <br>
+  <sub><b>Step 3.1:</b> Copy Trainer Id and Data Link button. Click "Data Link" button and assign the Data Link confirm also</sub>
+</p>
+
+<p align="center">
+  <img src="https://i.postimg.cc/fyPLR07d/image.png" width="450" />
+  <img src="https://i.postimg.cc/Pqdth4Gc/image.png" width="450" />
+  <br>
+  <sub><b>Step 3.2:</b> Click confirm and you will assign "Set" button next. Click confirm "Set" again and assign 4 remainings one (self-explanatory) </sub>
+</p>
+
+<p align="center">
+  <img src="https://i.postimg.cc/x13XKqnw/image.png" width="350" />
+  <br>
+  <sub><b>Step 3.2.1:</b> Save the "Link Account Clicks" </sub>
+</p>
 
 ---
 
-### Section 2: "Assign Click"
-<p align="center">
-  <img src="https://i.imgur.com/example2.gif" width="400" />
-</p>
+### Section 2: "Assign Card Regions"
+This is quite easy to do if you watch and do it carefully to ensure the macro can be detect each card rarity correctly
 
 ---
 
