@@ -60,9 +60,9 @@ Simply extract the folder, then run `start_macro.bat` (inside the MACRO_HERE_OPE
    - Press `F1` to start, `F3` to stop, or use the GUI buttons.
 
 ---
-## Macro Assignment Tutorial (IMPORTANT!!!!!!!!!!)
-Go to "Reroll" tab of the macro (Make sure you have to be on fullscreen mode before doing this!!)
-
+## ⚠️⚠️ Macro Assignment Tutorial (IMPORTANT!!!!!!!!!!) ⚠️⚠️
+### Go to "Reroll" tab of the macro (Make sure you have to be on fullscreen mode before doing this!!)
+### The settings already setup for "*1920x1080 fullscreen*" (If your PC resolution doesn't match please do fine tune your macro setting from Section 1 -> 4
 ---
 
 ### Section 1: "Macro Reroll Clicks"
@@ -95,10 +95,23 @@ For the "Reroll" section, this only has 3 things to assign:
 So after you have done, click the right arrow to navigate to 'Register' section. And now you have to create your new fresh account by delete user data as step 1.3 (Make sure your main account has been LINKED BEFORE. I'm not taking responsible for your lost account as you aware of doing this!) 
 
 <p align="center">
+  <img src="https://i.postimg.cc/hjBd8ZGp/image.png" width="350" />
+  <br>
+  <sub><b>Step 1.4a:</b> Term Of Consent box and Common Label Popup region assign (should be available on v1.05-beta version and silent update from v1.0-beta (please redownload to take affect!)</sub>
+</p>
+
+And do the Term Of Consent box and Common Label Popup region assign (step 1.4a) first:
+<p align="center">
+  <img src="readme_gallery/1.gif" width="550" />
+</p>
+
+
+<p align="center">
   <img src="https://i.postimg.cc/wjpj85Qs/image.png" width="600" />
   <br>
   <sub><b>Step 1.4:</b> Term Of Consent box.</sub>
 </p>
+
 
 <p align="center">
   <img src="https://i.postimg.cc/pVKNNwGq/image.png" width="600" />
@@ -218,12 +231,14 @@ Now, close the window that assign those macro clicks, click "Assign Card Regions
   <sub><b>Assign Card Regions</b></sub>
 </p>
 
-This is quite easy to do if you watch this short video tutorial below and do it carefully to ensure the macro can be detect each card rarity correctly:
+This is quite easy to do if you watch this short gif tutorial below and do it carefully to ensure the macro can be detect each card rarity correctly:
 
 
+<p align="center">
+  <img src="readme_gallery/assign_card.gif" width="700" />
+</p>
 
-https://github.com/user-attachments/assets/4edd979a-b2a8-4d4a-bf10-35a3c76a1228
-
+Remember to click "Save Card Regions" also....
 
 ---
 
@@ -239,10 +254,10 @@ Close the previous "Assign Card Regions" window, click the "Macro Safe Check" on
 </p>
 
 
-There's rare chance that connection error would appear at anytime, it is the one:
+There's a chance that connection error would appear at anytime, it is the one:
 
 <p align="center">
-  <img src="https://i.postimg.cc/ZYD0mPBf/image.png" width="350" />
+  <img src="https://i.postimg.cc/ZYD0mPBf/image.png" width="450" />
   <br>
   <sub><b>"Connection Error popup" window</b></sub>
 </p>
@@ -251,18 +266,55 @@ There's rare chance that connection error would appear at anytime, it is the one
 Luckily, the connection error popup box shares the same as other one like those examples:
 
 <p align="center">
-  <img src="https://i.postimg.cc/j2KV0F6W/image.png" width="350" />
-  <img src="https://i.postimg.cc/k4QZcyr7/image.png" width="250" />
+  <img src="https://i.postimg.cc/j2KV0F6W/image.png" width="450" />
+  <img src="https://i.postimg.cc/k4QZcyr7/image.png" width="450" />
 </p>
 
-So we can assign the connection error with other regular popup without waiting it to be shown instead, so choose any one you wanted and make sure to follow this video:
+So we can assign the connection error with other regular popup without waiting it to be shown instead, so choose any one you wanted and make sure to follow this gif:
 
-
-
-https://github.com/user-attachments/assets/6997a463-43c2-4871-a166-a33cee9fb57d
+<p align="center">
+  <img src="readme_gallery/2.gif" width="750" />
+</p>
 
 
 (btw assign the connection error title screen button at the middle, mine one is a bit off mb...)
+
+And for the last of 3: Scout result, ssr card name and epithet region
+
+<p align="center">
+  <img src="https://i.postimg.cc/HLTXGPQR/image.png" width="400" />
+</p>
+
+Please do another test scout on your test account and follow as the gif:
+
+<p align="center">
+  <img src="readme_gallery/3.gif" width="800" />
+</p>
+
+
+---
+### Section 4: "SSR Reroll Options"
+This options allow you to select which card you wanted so the macro will detect the minimal amount of the that card you wanted and set a password for that rerolled account.
+
+<p align="center">
+  <img src="https://i.postimg.cc/d07kKPhW/image.png" width="350" />
+</p>
+
+Make sure to click "Save" button after you have choosen your favorite rerolled card AND set the password. Otherwise it won't save your setting after you close the window.
+
+<p align="center">
+  <img src="https://i.postimg.cc/pdnT6fS4/image.png" width="350" />
+  <img src="https://i.postimg.cc/rw1ZC3VP/image.png" width="350" />
+  <br>
+  <sub><b>Macro ping on Discord webhook when ended run and found enough card from my settings (Mine one is x3 Chiyono). You can put your discord user ID on this box so it will ping you</b></sub>
+</p>
+
+
+Don't worry about it, the macro still save the met requirement reroll account on this text file: "met_required_accounts.txt"
+<p align="center">
+  <img src="https://i.postimg.cc/x8Lpx4G8/image.png" width="550" />
+</p>
+
 ---
 
 ## 📝 Notes
