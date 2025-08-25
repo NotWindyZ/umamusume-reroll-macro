@@ -97,7 +97,7 @@ So after you have done, click the right arrow to navigate to 'Register' section.
 <p align="center">
   <img src="https://i.postimg.cc/hjBd8ZGp/image.png" width="350" />
   <br>
-  <sub><b>Step 1.4a:</b> Term Of Consent box and Common Label Popup region assign (should be available on v1.05-beta version and silent update from v1.0-beta (please redownload to take affect!)</sub>
+  <sub><b>Step 1.4a:</b> Term Of Consent box and Common Label Popup region assign (should be available on v1.05-beta version, please redownload to take change)</sub>
 </p>
 
 And do the Term Of Consent box and Common Label Popup region assign (step 1.4a) first:
