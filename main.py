@@ -1,4 +1,7 @@
 import configparser, datetime, json, logging, os, shutil, sys, threading, time, traceback, enum, re, autoit, cv2, difflib, easyocr, glob, keyboard, numpy as np, pygetwindow as gw, pyperclip, requests
+import webbrowser, requests
+from PIL import Image, ImageTk
+from io import BytesIO
 from functools import wraps
 from tkinter import PhotoImage
 from collections import Counter
@@ -9,7 +12,6 @@ from PIL import ImageGrab, Image
 from ttkbootstrap import Style
 
 CONFIG_FILE = 'config.ini'
-SSR_TEMPLATE_PATH = os.path.join('images_scans', 'ssr.png')
 
 class ConfigSection(enum.Enum):
     WEBHOOK = 'WEBHOOK'
@@ -32,7 +34,7 @@ class WebhookStatus(enum.Enum):
     SCOUTMENU = 'scoutmenu'
     RUNSTART = 'runstart'
 
-# Decorator for macro step methods
+# macro step methods
 def macro_active_only(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
@@ -290,8 +292,8 @@ def detect_rarity_in_row(region_img, templates, threshold=0.7):
 class UMAPanel:
     def __init__(self, root):
         self.root = root
-        self.root.title('Uma Musume Reroll Macro (v1.05-beta)')
-        self.root.geometry('530x300')
+        self.root.title('Uma Musume Reroll Macro (v1.05hotfix-beta) (Idle)')
+        self.root.geometry('530x320')
         style = Style(theme='cosmo')
 
         try:
@@ -451,7 +453,8 @@ class UMAPanel:
 
         webhook_frame = Frame(notebook)
         reroll_frame = Frame(notebook)
-
+        credit_frame = Frame(notebook)
+        
         # Webhook Tab
         Label(webhook_frame, text='Discord Webhook URL:').pack(pady=(20, 5))
         url_entry = Entry(webhook_frame, textvariable=self.webhook_url, width=50, show='*')
@@ -462,6 +465,7 @@ class UMAPanel:
         ping_entry.pack(pady=5)
         ping_entry.bind('<FocusOut>', lambda e: save_config(self.webhook_url.get(), self.ping_user_id.get(), self.card_coords))
         Button(webhook_frame, text='Send Test Notification', command=self.send_test_notification).pack(pady=10)
+        
 
         # Reroll Tab - Add carats and general delay input
         self.rerolled_account_carats = IntVar(value=0)
@@ -511,6 +515,7 @@ class UMAPanel:
 
         notebook.add(webhook_frame, text='Webhook')
         notebook.add(reroll_frame, text='Reroll')
+        notebook.add(credit_frame, text='Credit')
 
         control_frame = Frame(root)
         control_frame.pack(pady=10)
@@ -525,6 +530,75 @@ class UMAPanel:
         theme_names = style.theme_names()
         theme_dropdown = tkttk.Combobox(control_frame, values=theme_names, textvariable=theme_var, width=16, state='readonly')
         theme_dropdown.pack(side='left', padx=5)
+        
+        # Credit Tab
+        Label(credit_frame, text='Macro developed by: "notwindybee_" (Discord)', font=('Arial', 12, 'bold')).pack(pady=(20, 10))
+        try:
+            gif_url = 'https://i.postimg.cc/pXTYdkrZ/mambo-ume-usume.gif'
+            response = requests.get(gif_url, timeout=5)
+            img_data = response.content
+            pil_img = Image.open(BytesIO(img_data))
+            frames = []
+            try:
+                while True:
+                    frame = pil_img.copy().resize((90,90), Image.LANCZOS)
+                    frames.append(ImageTk.PhotoImage(frame))
+                    pil_img.seek(len(frames))
+            except EOFError:
+                pass
+            if not frames:
+                raise Exception('No frames in GIF')
+            gif_label = Label(credit_frame)
+            gif_label.pack(pady=(0, 10))
+            def animate_gif(idx=0):
+                gif_label.config(image=frames[idx])
+                gif_label.image = frames[idx]
+                gif_label.after(45, animate_gif, (idx+1)%len(frames))
+            animate_gif()
+        except Exception as e:
+            print(e)
+        # GitHub hyperlink with icon (25x25)
+        github_row = Frame(credit_frame)
+        github_row.pack(pady=2)
+        try:
+            github_icon_url = 'https://i.postimg.cc/3NJ8hkKL/image.png'
+            response = requests.get(github_icon_url, timeout=5)
+            icon_data = response.content
+            pil_icon = Image.open(BytesIO(icon_data)).resize((25,25), Image.LANCZOS)
+            github_icon_img = ImageTk.PhotoImage(pil_icon)
+            github_icon_label = Label(github_row, image=github_icon_img, borderwidth=0, highlightthickness=0)
+            github_icon_label.image = github_icon_img
+            github_icon_label.pack(side='left', padx=(0,3))
+        except Exception as e:
+            github_icon_label = None
+        def open_github(event=None): webbrowser.open_new('https://github.com/NotWindyZ/umamusume-reroll-macro')
+        github_label = Label(github_row, text='Umamusume macro repo (Github)', fg="#0099ff", cursor='hand2', font=('Arial', 11, 'underline'))
+        github_label.pack(side='left')
+        github_label.bind('<Button-1>', open_github)
+        if github_icon_label:
+            github_icon_label.bind('<Button-1>', open_github)
+        # Youtube hyperlink
+        yt_frame = Frame(credit_frame)
+        yt_frame.pack(pady=2)
+        try:
+            yt_icon_url = 'https://i.postimg.cc/Y0sHw8D9/image.png'
+            response = requests.get(yt_icon_url, timeout=5)
+            icon_data = response.content
+            pil_icon = Image.open(BytesIO(icon_data)).resize((28,20), Image.LANCZOS)
+            yt_icon_img = ImageTk.PhotoImage(pil_icon)
+            yt_icon_label = Label(yt_frame, image=yt_icon_img, borderwidth=0, highlightthickness=0)
+            yt_icon_label.image = yt_icon_img
+            yt_icon_label.pack(side='left', padx=(0,3))
+        except Exception as e:
+            yt_icon_label = None
+        Label(yt_frame, text='My Youtube channel: ', font=('Arial', 11)).pack(side='left')
+        def open_youtube(event=None): webbrowser.open_new('https://www.youtube.com/@NotWindyZ')
+        yt_link = Label(yt_frame, text='click here', fg="#0099ff", cursor='hand2', font=('Arial', 11, 'underline'))
+        yt_link.pack(side='left')
+        yt_link.bind('<Button-1>', open_youtube)
+        if yt_icon_label:
+            yt_icon_label.bind('<Button-1>', open_youtube)
+        
         try:
             style.theme_use(config_theme)
         except Exception:
@@ -1435,6 +1509,7 @@ class UMAPanel:
     def on_start(self):
         if self.is_macro_started:return
         print('Starting Macro...')
+        self.root.title('Uma Musume Reroll Macro (v1.05hotfix-beta) (Running)')
         self.is_macro_started = True
         send_discord_notification('', self.webhook_url.get(), self.ping_user_id.get(), status='start')
         self.start_connection_error_failsafe()  # Start failsafe thread
@@ -1447,6 +1522,7 @@ class UMAPanel:
             return
         print('Stopping Macro...')
         self.is_macro_started = False
+        self.root.title('Uma Musume Reroll Macro (v1.05hotfix-beta) (Stopped)')
         send_discord_notification('', self.webhook_url.get(), self.ping_user_id.get(), status='stop')
 
     @macro_active_only
@@ -1497,11 +1573,8 @@ class UMAPanel:
                 self.logger.warning('One or more Register Account Clicks are not set!')
                 print('One or more Register Account Clicks are not set!')
                 return
-            # Terms of Consent popup
-            self.logger.info('Checking for Terms of Consent popup...')
-            toc_found = self.detect_common_popup_text(region_key='term_of_consent_region', keywords=['terms of consent', 'consent', 'terms'])
-            if toc_found:
-                self.logger.info('Terms of Consent popup detected, proceeding to click.')
+
+            def handle_terms_of_consent():
                 x1, y1 = map(int, terms_view.split(','))
                 x2, y2 = map(int, privacy_view.split(','))
                 x3, y3 = map(int, i_agree.split(','))
@@ -1509,17 +1582,11 @@ class UMAPanel:
                 self.logger.info(f'Clicking Terms of Use View at ({x1}, {y1})')
                 self.Global_MouseClick(x1, y1)
                 time.sleep(5.5)
-                if not self.is_macro_started:
-                    self.logger.info('Macro stopped after Terms of Use View click.')
-                    print('Macro stopped after Terms of Use View click.')
-                    return
+                if not self.is_macro_started: return True
                 self.logger.info('Sending Ctrl+W to close browser tab')
                 autoit.send('^w')
                 time.sleep(2.2)
-                if not self.is_macro_started:
-                    self.logger.info('Macro stopped after first Ctrl+W.')
-                    print('Macro stopped after first Ctrl+W.')
-                    return
+                if not self.is_macro_started: return True
                 win = None
                 for w in gw.getAllWindows():
                     if w.title == 'Umamusume':
@@ -1528,156 +1595,123 @@ class UMAPanel:
                 if win:
                     win.activate()
                     time.sleep(3.5)
-                if not self.is_macro_started:
-                    self.logger.info('Macro stopped after refocusing game (after Terms).')
-                    print('Macro stopped after refocusing game (after Terms).')
-                    return
+                if not self.is_macro_started: return True
                 self.logger.info(f'Clicking Privacy Policy View at ({x2}, {y2})')
                 self.Global_MouseClick(x2, y2)
                 time.sleep(5.2)
-                if not self.is_macro_started:
-                    self.logger.info('Macro stopped after Privacy Policy View click.')
-                    print('Macro stopped after Privacy Policy View click.')
-                    return
+                if not self.is_macro_started: return True
                 self.logger.info('Sending Ctrl+W to close browser tab')
                 autoit.send('^w')
                 time.sleep(4.7)
-                if not self.is_macro_started: return
+                if not self.is_macro_started: return True
                 if win: win.activate()
                 time.sleep(2.5)
-                if not self.is_macro_started: return
+                if not self.is_macro_started: return True
                 self.logger.info(f'Clicking I Agree at ({x3}, {y3})')
                 self.Global_MouseClick(x3, y3)
                 time.sleep(3.5)
-                if not self.is_macro_started:
-                    self.logger.info('Macro stopped after I Agree click.')
-                    print('Macro stopped after I Agree click.')
-                    return
-            else:
-                self.logger.warning('[ForceContinue] Terms of Consent popup NOT detected after retries. Forcing continue and clicking expected buttons.')
-                x1, y1 = map(int, terms_view.split(','))
-                x2, y2 = map(int, privacy_view.split(','))
-                x3, y3 = map(int, i_agree.split(','))
+                if not self.is_macro_started: return True
+                return False  # Not done yet
+
+            def handle_country_region():
+                x1, y1 = map(int, country_change_btn.split(','))
+                x2, y2 = map(int, country_ok_btn.split(','))
+                x3, y3 = map(int, countrylist_ok_btn.split(','))
                 self.Global_MouseClick(x1, y1)
-                time.sleep(5.5)
-                autoit.send('^w')
-                time.sleep(2.2)
-                win = None
-                for w in gw.getAllWindows():
-                    if w.title == 'Umamusume':
-                        win = w
-                        break
-                if win:
-                    win.activate()
-                    time.sleep(3.5)
+                time.sleep(1.8)
                 self.Global_MouseClick(x2, y2)
-                time.sleep(5.2)
-                autoit.send('^w')
-                time.sleep(4.7)
-                if win: win.activate()
-                time.sleep(2.5)
+                time.sleep(1.8)
                 self.Global_MouseClick(x3, y3)
-                time.sleep(3.5)
-            # Country/Region popup
-            self.logger.info('Checking for Country/Region popup...')
-            cr_found = False
-            if country_change_btn and country_ok_btn and countrylist_ok_btn:
-                cr_found = self.detect_common_popup_text(region_key='common_popup_region', keywords=['country/region', 'country', 'region'])
-                if cr_found:
-                    self.logger.info('Country/Region popup detected, proceeding to click.')
-                    x1, y1 = map(int, country_change_btn.split(','))
-                    x2, y2 = map(int, country_ok_btn.split(','))
-                    x3, y3 = map(int, countrylist_ok_btn.split(','))
-                    self.Global_MouseClick(x1, y1)
-                    time.sleep(1.8)
-                    self.Global_MouseClick(x2, y2)
-                    time.sleep(1.8)
-                    self.Global_MouseClick(x3, y3)
-                    time.sleep(1.85)
-                else:
-                    self.logger.warning('[ForceContinue] Country/Region popup NOT detected after retries. Forcing continue and clicking expected buttons.')
-                    x1, y1 = map(int, country_change_btn.split(','))
-                    x2, y2 = map(int, country_ok_btn.split(','))
-                    x3, y3 = map(int, countrylist_ok_btn.split(','))
-                    self.Global_MouseClick(x1, y1)
-                    time.sleep(1.8)
-                    self.Global_MouseClick(x2, y2)
-                    time.sleep(1.8)
-                    self.Global_MouseClick(x3, y3)
-                    time.sleep(1.85)
-            # Age confirmation popup
-            self.logger.info('Checking for Age Confirmation popup...')
-            age_found = False
-            if age_input_box and age_ok_btn:
-                age_found = self.detect_common_popup_text(region_key='common_popup_region', keywords=['age confirmation', 'confirmation', 'age', 'confirm'])
-                if age_found:
-                    self.logger.info('Age Confirmation popup detected, proceeding to click.')
-                    x4, y4 = map(int, age_input_box.split(','))
-                    x5, y5 = map(int, age_ok_btn.split(','))
-                    self.Global_MouseClick(x4, y4)
-                    time.sleep(1.1)
-                    autoit.send('199001')
-                    time.sleep(0.8)
-                    for i in range(5):
-                        if not self.is_macro_started: return
-                        self.Global_MouseClick(x5, y5)
-                        time.sleep(1.2)
-                    time.sleep(1.5)
-                    for i in range(7):
-                        if not self.is_macro_started: return
-                        self.Global_MouseClick(x5, y5)
-                        time.sleep(1.65)
-                    time.sleep(1.5)
-                else:
-                    self.logger.warning('[ForceContinue] Age Confirmation popup NOT detected after retries. Forcing continue and clicking expected buttons.')
-                    x4, y4 = map(int, age_input_box.split(','))
-                    x5, y5 = map(int, age_ok_btn.split(','))
-                    self.Global_MouseClick(x4, y4)
-                    time.sleep(1.1)
-                    autoit.send('199001')
-                    time.sleep(0.8)
-                    for i in range(5):
-                        if not self.is_macro_started: return
-                        self.Global_MouseClick(x5, y5)
-                        time.sleep(1.2)
-                    time.sleep(1.5)
-                    for i in range(7):
-                        if not self.is_macro_started: return
-                        self.Global_MouseClick(x5, y5)
-                        time.sleep(1.65)
-                    time.sleep(1.5)
-            # Trainer Registration popup
-            self.logger.info('Checking for Trainer Registration popup...')
-            tr_found = False
-            if trainer_name_box and register_btn:
-                tr_found = self.detect_common_popup_text(region_key='common_popup_region', keywords=['trainer', 'registration', 'register'])
-                if tr_found:
-                    self.logger.info('Trainer Registration popup detected, proceeding to click.')
-                    x6, y6 = map(int, trainer_name_box.split(','))
-                    self.Global_MouseClick(x6, y6)
-                    time.sleep(0.8)
-                    autoit.send('RerolledAccount')
-                    time.sleep(1.2)
-                    x7, y7 = map(int, register_btn.split(','))
-                    self.Global_MouseClick(x7, y7)
-                    time.sleep(1.5)
-                else:
-                    self.logger.warning('[ForceContinue] Trainer Registration popup NOT detected after retries. Forcing continue and clicking expected buttons.')
-                    x6, y6 = map(int, trainer_name_box.split(','))
-                    self.Global_MouseClick(x6, y6)
-                    time.sleep(0.8)
-                    autoit.send('RerolledAccount')
-                    time.sleep(1.2)
-                    x7, y7 = map(int, register_btn.split(','))
-                    self.Global_MouseClick(x7, y7)
-                    time.sleep(1.5)
-            # Confirm registration OK popup
-            if age_ok_btn:
+                time.sleep(1.85)
+                return False
+
+            def handle_age_confirmation():
+                x4, y4 = map(int, age_input_box.split(','))
                 x5, y5 = map(int, age_ok_btn.split(','))
-                for i in range(8):
-                    if not self.is_macro_started: return
+                self.Global_MouseClick(x4, y4)
+                time.sleep(1.1)
+                autoit.send('199001')
+                time.sleep(0.8)
+                for i in range(5):
+                    if not self.is_macro_started: return True
                     self.Global_MouseClick(x5, y5)
-                    time.sleep(0.65)
+                    time.sleep(1.2)
+                time.sleep(1.5)
+                for i in range(7):
+                    if not self.is_macro_started: return True
+                    self.Global_MouseClick(x5, y5)
+                    time.sleep(1.65)
+                time.sleep(1.5)
+                return False
+
+            def handle_trainer_registration():
+                x6, y6 = map(int, trainer_name_box.split(','))
+                x7, y7 = map(int, register_btn.split(','))
+                self.Global_MouseClick(x6, y6)
+                time.sleep(0.8)
+                autoit.send('RerolledAccount')
+                time.sleep(1.2)
+                self.Global_MouseClick(x7, y7)
+                time.sleep(1.5)
+                # Confirm registration OK popup
+                if age_ok_btn:
+                    x5, y5 = map(int, age_ok_btn.split(','))
+                    for i in range(8):
+                        if not self.is_macro_started: return True
+                        self.Global_MouseClick(x5, y5)
+                        time.sleep(0.65)
+                return True
+
+            popup_steps = [
+                {
+                    'name': 'Terms of Consent',
+                    'region_key': 'term_of_consent_region',
+                    'keywords': ['terms of consent', 'consent', 'terms'],
+                    'action': handle_terms_of_consent
+                },
+                {
+                    'name': 'Country/Region',
+                    'region_key': 'common_popup_region',
+                    'keywords': ['country/region', 'country', 'region'],
+                    'action': handle_country_region
+                },
+                {
+                    'name': 'Age Confirmation',
+                    'region_key': 'common_popup_region',
+                    'keywords': ['age confirmation', 'confirmation', 'age', 'confirm'],
+                    'action': handle_age_confirmation
+                },
+                {
+                    'name': 'Trainer Registration',
+                    'region_key': 'common_popup_region',
+                    'keywords': ['trainer', 'registration', 'register'],
+                    'action': handle_trainer_registration
+                },
+            ]
+
+            registration_done = False
+            max_loops = 30  # Prevent infinite loop
+            loop_count = 0
+            while self.is_macro_started and not registration_done and loop_count < max_loops:
+                handled = False
+                for step in popup_steps:
+                    found = self.detect_common_popup_text(region_key=step['region_key'], keywords=step['keywords'], send_webhook_on_fail=False)
+                    if found:
+                        self.logger.info(f"[PopupLoop] {step['name']} popup detected, handling...")
+                        result = step['action']()
+                        handled = True
+                        if step['name'] == 'Trainer Registration' or result is True:
+                            registration_done = True
+                        break  # UI changed, restart detection loop
+                if not handled:
+                    self.logger.info('[PopupLoop] No known popup detected, waiting...')
+                    # Only now, after all checks failed, send popup fail for the highest-priority popup
+                    first = popup_steps[0]
+                    self.detect_common_popup_text(region_key=first['region_key'], keywords=first['keywords'], send_webhook_on_fail=True)
+                    time.sleep(1.5)
+                loop_count += 1
+            if not registration_done:
+                self.logger.warning('[PopupLoop] Registration not completed after max loops!')
         except Exception as e:
             self.logger.error(f'Error in register_user_account_loop: {e}')
             print(f'Error in register_user_account_loop: {e}') 
@@ -1697,7 +1731,7 @@ class UMAPanel:
             x_gift, y_gift = map(int, mini_gift_icon.split(','))
             x_collect, y_collect = map(int, collect_all_btn.split(','))
             
-            for i in range(35):
+            for i in range(45):
                 if not self.is_macro_started:
                     print(f'Macro stopped during forward_icon intro loop (iteration {i+1}).')
                     return
@@ -1930,11 +1964,10 @@ class UMAPanel:
                         time.sleep(1.5 + delay)
                         ocr_names = []
                         match_results = []
-                        found_ssr = None
                         best_match = None
                         best_score = 0
                         best_attempt = -1
-                        # 1. Fuzzy match OCR name to all config SSR names, keep best match
+                        epithet_region = self.safe_check.get('found_ssr_card_epithet', None)
                         for ocr_attempt in range(4):
                             if not self.is_macro_started: return
                             screenshot = ImageGrab.grab()
@@ -1945,42 +1978,40 @@ class UMAPanel:
                             ocr_names.append(card_name)
                             ocr_clean = card_name.replace(' ', '').lower()
                             for ssr_type, ssr_name in zip(ssr_reroll_types, ssr_reroll_names):
-                                cfg_clean = ssr_name.replace(' ', '').lower()
-                                base_cfg = cfg_clean.split('(')[0] if '(' in cfg_clean else cfg_clean
-                                score = self.fuzzy_ratio(ocr_clean, base_cfg)
-                                if score > best_score and score > 0.7:
-                                    best_score = score
-                                    best_match = (ssr_type, ssr_name)
-                                    best_attempt = ocr_attempt
+                                # Split card config name and epithet
+                                if '(' in ssr_name and ')' in ssr_name:
+                                    base_cfg = ssr_name.split('(')[0].replace(' ', '').lower()
+                                    config_epithet = ssr_name[ssr_name.find('(')+1:ssr_name.find(')')].replace(' ', '').lower()
+                                else:
+                                    base_cfg = ssr_name.replace(' ', '').lower()
+                                    config_epithet = None
+                                score_name = self.fuzzy_ratio(ocr_clean, base_cfg)
+                                if score_name > 0.7:
+                                    if config_epithet and epithet_region:
+                                        screenshot_epi = ImageGrab.grab()
+                                        x_epi, y_epi, w_epi, h_epi = epithet_region
+                                        region_epi = screenshot_epi.crop((x_epi, y_epi, x_epi+w_epi, y_epi+h_epi))
+                                        img_epi = cv2.cvtColor(np.array(region_epi), cv2.COLOR_RGB2BGR)
+                                        result_epi = self.ocr_reader.readtext(img_epi)
+                                        epithet_ocr = ' '.join([r[1] for r in result_epi]).strip()
+                                        epithet_ocr_clean = epithet_ocr.replace(' ', '').lower()
+                                        score_epithet = self.fuzzy_ratio(epithet_ocr_clean, config_epithet)
+                                        print(f"[DEBUG] Name OCR: '{card_name}', Config: '{base_cfg}', Score: {score_name:.2f}")
+                                        print(f"[DEBUG] Epithet OCR: '{epithet_ocr_clean}', Config: '{config_epithet}', Score: {score_epithet:.2f}")
+                                        if score_epithet > 0.7:
+                                            match_results.append((ssr_type, ssr_name))
+                                            if score_name + score_epithet > best_score:
+                                                best_score = score_name + score_epithet
+                                                best_match = (ssr_type, ssr_name)
+                                                best_attempt = ocr_attempt
+                                    elif not config_epithet:
+                                        print(f"[DEBUG] Name OCR: '{card_name}', Config: '{base_cfg}', Score: {score_name:.2f}")
+                                        match_results.append((ssr_type, ssr_name))
+                                        if score_name > best_score:
+                                            best_score = score_name
+                                            best_match = (ssr_type, ssr_name)
+                                            best_attempt = ocr_attempt
                             time.sleep(0.25)
-                        # 2. If best_match has parentheses, check epithet ONLY for that config card
-                        if best_match and '(' in best_match[1] and ')' in best_match[1]:
-                            epithet_region = self.safe_check.get('found_ssr_card_epithet', None)
-                            epithet_ocr = ''
-                            if best_attempt >= 0:
-                                screenshot = ImageGrab.grab()
-                                if epithet_region:
-                                    x_epi, y_epi, w_epi, h_epi = epithet_region
-                                    region_epi = screenshot.crop((x_epi, y_epi, x_epi+w_epi, y_epi+h_epi))
-                                    img_epi = cv2.cvtColor(np.array(region_epi), cv2.COLOR_RGB2BGR)
-                                    result_epi = self.ocr_reader.readtext(img_epi)
-                                    epithet_ocr = ' '.join([r[1] for r in result_epi]).strip()
-                            start = best_match[1].find('(') + 1
-                            end = best_match[1].find(')')
-                            config_epithet = best_match[1][start:end].replace(' ', '').lower()
-                            epithet_ocr_clean = epithet_ocr.replace(' ', '').lower()
-                            score_epithet = self.fuzzy_ratio(config_epithet, epithet_ocr_clean)
-                            score_name = best_score
-                            print(f"[DEBUG] Name OCR: '{ocr_names[best_attempt] if best_attempt >= 0 else ''}', Config: '{best_match[1].split('(')[0]}', Score: {score_name:.2f}")
-                            print(f"[DEBUG] Epithet OCR: '{epithet_ocr_clean}', Config: '{config_epithet}', Score: {score_epithet:.2f}")
-                            combined_score = (score_name + score_epithet) / 2
-                            if not epithet_ocr or score_epithet < 0.5:
-                                print(f"[Warning] Epithet OCR for {best_match[1]} is empty or low confidence: '{epithet_ocr}' (score={score_epithet:.2f})")
-                            if score_epithet > 0.7 and score_name > 0.7:
-                                match_results.append(best_match)
-                        elif best_match:
-                            print(f"[DEBUG] Name OCR: '{ocr_names[best_attempt] if best_attempt >= 0 else ''}', Config: '{best_match[1]}', Score: {best_score:.2f}")
-                            match_results.append(best_match)
                         found_types = [m[0] for m in match_results if m]
                         found_names = [m[1] for m in match_results if m]
                         if found_types and found_names:
@@ -1988,8 +2019,8 @@ class UMAPanel:
                             print(f'Best match for {slot_key}: {found_types[0]}_{found_names[0]} (OCRs: {ocr_names})')
                         else:
                             print(f'No SSR config match for {slot_key} (OCRs: {ocr_names})')
-                        if found_ssr:
-                            key = f'{found_ssr[0]} ({found_ssr[1]})'
+                        if best_match:
+                            key = f'{best_match[1]} ({best_match[0]})'
                             ssr_this_pull[key] = ssr_this_pull.get(key, 0) + 1
                             total_ssr_counter[key] = total_ssr_counter.get(key, 0) + 1
                         for _ in range(5):
@@ -2233,6 +2264,7 @@ class UMAPanel:
 
     def start_connection_error_failsafe(self):
         def check_loop():
+            error_keywords = ['connection error', 'download error', 'error']
             while self.is_macro_started:
                 try:
                     config = load_config()
@@ -2250,24 +2282,29 @@ class UMAPanel:
                     img = cv2.cvtColor(np.array(region), cv2.COLOR_RGB2BGR)
                     result = self.ocr_reader.readtext(img)
                     text = ' '.join([r[1] for r in result]).strip().lower()
-                    if 'connection error' in text:
+                    matched_keyword = None
+                    for kw in error_keywords:
+                        if kw in text:
+                            matched_keyword = kw
+                            break
+                    if matched_keyword:
                         screenshot_path = capture_and_resize_screenshot('connection_error')
                         send_discord_notification(
-                            'Connection error detected! Macro stopped and returned to title screen.',
+                            f'{matched_keyword.title()} detected! Macro stopped and returned to title screen.',
                             self.webhook_url.get(),
                             self.ping_user_id.get(),
-                            status=None,
+                            status='popupfail',
+                            description=f'OCR="{text}"\nKeyword matched: {matched_keyword}',
                             screenshot_path=screenshot_path
                         )
-                        print('[Failsafe] Connection error detected! Stopping macro and returning to title screen.')
-                        self.logger.error('[Failsafe] Connection error detected! Returning to title screen.')
+                        print(f'[Failsafe] {matched_keyword.title()} detected! Stopping macro and returning to title screen.')
+                        self.logger.error(f'[Failsafe] {matched_keyword.title()} detected! Returning to title screen.')
                         self.is_macro_started = False
                         x_btn, y_btn = map(int, title_screen_btn.split(','))
-                        for i in range(4):
+                        for i in range(5):
                             self.Global_MouseClick(x_btn, y_btn)
                             time.sleep(1.2)
                         time.sleep(5)
-                        
                         # Increment reroll_run_count to avoid softlock
                         if hasattr(self, 'reroll_run_count'):
                             self.reroll_run_count += 1
@@ -2294,7 +2331,7 @@ class UMAPanel:
         time.sleep(max(0.01, delay_ms / 1000.0 * multiplier))
 
 
-    def detect_common_popup_text(self, region_key='common_popup_region', keywords=None, retries=3):
+    def detect_common_popup_text(self, region_key='common_popup_region', keywords=None, retries=3, send_webhook_on_fail=True):
         config = load_config()
         if region_key in ['term_of_consent_region', 'common_popup_region']:
             region = config.get('REGISTER_ACCOUNT', region_key, fallback=None)
@@ -2304,11 +2341,15 @@ class UMAPanel:
             self.logger.warning(f'[PopupCheck] Region {region_key} not set in config.')
             return False
         x, y, w, h = map(int, region.split(','))
+        last_text = ""
+        last_img = None
         for attempt in range(retries):
             screenshot = ImageGrab.grab().crop((x, y, x+w, y+h))
+            last_img = screenshot
             img = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
             result = self.ocr_reader.readtext(img)
             text = ' '.join([r[1] for r in result]).strip().lower()
+            last_text = text
             self.logger.info(f'[PopupCheck] Attempt {attempt+1}/{retries} in region {region_key}: OCR="{text}" | Keywords={keywords}')
             if text:
                 if keywords:
@@ -2320,7 +2361,32 @@ class UMAPanel:
                     self.logger.info(f'[PopupCheck] Text found (no keywords): "{text}" in {region_key}')
                     return True
             time.sleep(1.1)
-        self.logger.warning(f'[PopupCheck] No keyword match after {retries} attempts in {region_key}. Last OCR: "{text}"')
+        # (popupfail failsafe)
+        if send_webhook_on_fail:
+            try:
+                screenshot_dir = os.path.join(os.getcwd(), 'umapyoi_screenshots')
+                if not os.path.exists(screenshot_dir):
+                    os.makedirs(screenshot_dir)
+                screenshot_path = os.path.join(
+                    screenshot_dir,
+                    f'popupfail_{region_key}_{datetime.datetime.now().strftime("%Y%m%d_%H%M%S")}.png'
+                )
+                if last_img is not None:
+                    last_img.save(screenshot_path, 'PNG')
+                    send_discord_notification(
+                        message=f'[PopupFail] Popup not detected: {region_key}',
+                        webhook_url=self.webhook_url.get(),
+                        ping_user_id=self.ping_user_id.get(),
+                        status='popupfail',
+                        description=f'OCR="{last_text}"\nKeywords={keywords}',
+                        ping_on_embed=False,
+                        ssr_details=None,
+                        is_summary=False,
+                        screenshot_path=screenshot_path
+                    )
+            except Exception as e:
+                self.logger.warning(f'[PopupCheck] Failed to send popupfail webhook: {e}')
+        self.logger.warning(f'[PopupCheck] No keyword match after {retries} attempts in {region_key}. Last OCR: "{last_text}"')
         return False
 
     def register_user_account_loop(self):
@@ -2341,11 +2407,8 @@ class UMAPanel:
                 self.logger.warning('One or more Register Account Clicks are not set!')
                 print('One or more Register Account Clicks are not set!')
                 return
-            # Terms of Consent popup
-            self.logger.info('Checking for Terms of Consent popup...')
-            toc_found = self.detect_common_popup_text(region_key='term_of_consent_region', keywords=['terms of consent', 'consent', 'terms'])
-            if toc_found:
-                self.logger.info('Terms of Consent popup detected, proceeding to click.')
+
+            def handle_terms_of_consent():
                 x1, y1 = map(int, terms_view.split(','))
                 x2, y2 = map(int, privacy_view.split(','))
                 x3, y3 = map(int, i_agree.split(','))
@@ -2353,17 +2416,11 @@ class UMAPanel:
                 self.logger.info(f'Clicking Terms of Use View at ({x1}, {y1})')
                 self.Global_MouseClick(x1, y1)
                 time.sleep(5.5)
-                if not self.is_macro_started:
-                    self.logger.info('Macro stopped after Terms of Use View click.')
-                    print('Macro stopped after Terms of Use View click.')
-                    return
+                if not self.is_macro_started: return True
                 self.logger.info('Sending Ctrl+W to close browser tab')
                 autoit.send('^w')
                 time.sleep(2.2)
-                if not self.is_macro_started:
-                    self.logger.info('Macro stopped after first Ctrl+W.')
-                    print('Macro stopped after first Ctrl+W.')
-                    return
+                if not self.is_macro_started: return True
                 win = None
                 for w in gw.getAllWindows():
                     if w.title == 'Umamusume':
@@ -2372,160 +2429,125 @@ class UMAPanel:
                 if win:
                     win.activate()
                     time.sleep(3.5)
-                if not self.is_macro_started:
-                    self.logger.info('Macro stopped after refocusing game (after Terms).')
-                    print('Macro stopped after refocusing game (after Terms).')
-                    return
+                if not self.is_macro_started: return True
                 self.logger.info(f'Clicking Privacy Policy View at ({x2}, {y2})')
                 self.Global_MouseClick(x2, y2)
                 time.sleep(5.2)
-                if not self.is_macro_started:
-                    self.logger.info('Macro stopped after Privacy Policy View click.')
-                    print('Macro stopped after Privacy Policy View click.')
-                    return
+                if not self.is_macro_started: return True
                 self.logger.info('Sending Ctrl+W to close browser tab')
                 autoit.send('^w')
                 time.sleep(4.7)
-                if not self.is_macro_started: return
+                if not self.is_macro_started: return True
                 if win: win.activate()
                 time.sleep(2.5)
-                if not self.is_macro_started: return
+                if not self.is_macro_started: return True
                 self.logger.info(f'Clicking I Agree at ({x3}, {y3})')
                 self.Global_MouseClick(x3, y3)
                 time.sleep(3.5)
-                if not self.is_macro_started:
-                    self.logger.info('Macro stopped after I Agree click.')
-                    print('Macro stopped after I Agree click.')
-                    return
-            else:
-                self.logger.warning('[ForceContinue] Terms of Consent popup NOT detected after retries. Forcing continue and clicking expected buttons.')
-                x1, y1 = map(int, terms_view.split(','))
-                x2, y2 = map(int, privacy_view.split(','))
-                x3, y3 = map(int, i_agree.split(','))
+                if not self.is_macro_started: return True
+                return False  # Not done yet
+
+            def handle_country_region():
+                x1, y1 = map(int, country_change_btn.split(','))
+                x2, y2 = map(int, country_ok_btn.split(','))
+                x3, y3 = map(int, countrylist_ok_btn.split(','))
                 self.Global_MouseClick(x1, y1)
-                time.sleep(5.5)
-                autoit.send('^w')
-                time.sleep(2.2)
-                win = None
-                for w in gw.getAllWindows():
-                    if w.title == 'Umamusume':
-                        win = w
-                        break
-                if win:
-                    win.activate()
-                    time.sleep(3.5)
+                time.sleep(1.8)
                 self.Global_MouseClick(x2, y2)
-                time.sleep(5.2)
-                autoit.send('^w')
-                time.sleep(4.7)
-                if win: win.activate()
-                time.sleep(2.5)
+                time.sleep(1.8)
                 self.Global_MouseClick(x3, y3)
-                time.sleep(3.5)
-            # Country/Region popup
-            self.logger.info('Checking for Country/Region popup...')
-            cr_found = False
-            if country_change_btn and country_ok_btn and countrylist_ok_btn:
-                cr_found = self.detect_common_popup_text(region_key='common_popup_region', keywords=['country/region', 'country', 'region'])
-                if cr_found:
-                    self.logger.info('Country/Region popup detected, proceeding to click.')
-                    x1, y1 = map(int, country_change_btn.split(','))
-                    x2, y2 = map(int, country_ok_btn.split(','))
-                    x3, y3 = map(int, countrylist_ok_btn.split(','))
-                    self.Global_MouseClick(x1, y1)
-                    time.sleep(1.8)
-                    self.Global_MouseClick(x2, y2)
-                    time.sleep(1.8)
-                    self.Global_MouseClick(x3, y3)
-                    time.sleep(1.85)
-                else:
-                    self.logger.warning('[ForceContinue] Country/Region popup NOT detected after retries. Forcing continue and clicking expected buttons.')
-                    x1, y1 = map(int, country_change_btn.split(','))
-                    x2, y2 = map(int, country_ok_btn.split(','))
-                    x3, y3 = map(int, countrylist_ok_btn.split(','))
-                    self.Global_MouseClick(x1, y1)
-                    time.sleep(1.8)
-                    self.Global_MouseClick(x2, y2)
-                    time.sleep(1.8)
-                    self.Global_MouseClick(x3, y3)
-                    time.sleep(1.85)
-            # Age confirmation popup
-            self.logger.info('Checking for Age Confirmation popup...')
-            age_found = False
-            if age_input_box and age_ok_btn:
-                age_found = self.detect_common_popup_text(region_key='common_popup_region', keywords=['age confirmation', 'confirmation', 'age', 'confirm'])
-                if age_found:
-                    self.logger.info('Age Confirmation popup detected, proceeding to click.')
-                    x4, y4 = map(int, age_input_box.split(','))
-                    x5, y5 = map(int, age_ok_btn.split(','))
-                    self.Global_MouseClick(x4, y4)
-                    time.sleep(1.1)
-                    autoit.send('199001')
-                    time.sleep(0.8)
-                    for i in range(5):
-                        if not self.is_macro_started: return
-                        self.Global_MouseClick(x5, y5)
-                        time.sleep(1.2)
-                    time.sleep(1.5)
-                    for i in range(7):
-                        if not self.is_macro_started: return
-                        self.Global_MouseClick(x5, y5)
-                        time.sleep(1.65)
-                    time.sleep(1.5)
-                else:
-                    self.logger.warning('[ForceContinue] Age Confirmation popup NOT detected after retries. Forcing continue and clicking expected buttons.')
-                    x4, y4 = map(int, age_input_box.split(','))
-                    x5, y5 = map(int, age_ok_btn.split(','))
-                    self.Global_MouseClick(x4, y4)
-                    time.sleep(1.1)
-                    autoit.send('199001')
-                    time.sleep(0.8)
-                    for i in range(5):
-                        if not self.is_macro_started: return
-                        self.Global_MouseClick(x5, y5)
-                        time.sleep(1.2)
-                    time.sleep(1.5)
-                    for i in range(7):
-                        if not self.is_macro_started: return
-                        self.Global_MouseClick(x5, y5)
-                        time.sleep(1.65)
-                    time.sleep(1.5)
-            # Trainer Registration popup
-            self.logger.info('Checking for Trainer Registration popup...')
-            tr_found = False
-            if trainer_name_box and register_btn:
-                tr_found = self.detect_common_popup_text(region_key='common_popup_region', keywords=['trainer', 'registration', 'register'])
-                if tr_found:
-                    self.logger.info('Trainer Registration popup detected, proceeding to click.')
-                    x6, y6 = map(int, trainer_name_box.split(','))
-                    self.Global_MouseClick(x6, y6)
-                    time.sleep(0.8)
-                    autoit.send('RerolledAccount')
-                    time.sleep(1.2)
-                    x7, y7 = map(int, register_btn.split(','))
-                    self.Global_MouseClick(x7, y7)
-                    time.sleep(1.5)
-                else:
-                    self.logger.warning('[ForceContinue] Trainer Registration popup NOT detected after retries. Forcing continue and clicking expected buttons.')
-                    x6, y6 = map(int, trainer_name_box.split(','))
-                    self.Global_MouseClick(x6, y6)
-                    time.sleep(0.8)
-                    autoit.send('RerolledAccount')
-                    time.sleep(1.2)
-                    x7, y7 = map(int, register_btn.split(','))
-                    self.Global_MouseClick(x7, y7)
-                    time.sleep(1.5)
-            # Confirm registration OK popup
-            if age_ok_btn:
+                time.sleep(1.85)
+                return False
+
+            def handle_age_confirmation():
+                x4, y4 = map(int, age_input_box.split(','))
                 x5, y5 = map(int, age_ok_btn.split(','))
+                self.Global_MouseClick(x4, y4)
+                time.sleep(1.1)
+                autoit.send('199001')
+                time.sleep(0.8)
                 for i in range(5):
-                    if not self.is_macro_started: return
+                    if not self.is_macro_started: return True
                     self.Global_MouseClick(x5, y5)
-                    time.sleep(0.65)
+                    time.sleep(1.2)
+                time.sleep(1.5)
+                for i in range(7):
+                    if not self.is_macro_started: return True
+                    self.Global_MouseClick(x5, y5)
+                    time.sleep(1.65)
+                time.sleep(1.5)
+                return False
+
+            def handle_trainer_registration():
+                x6, y6 = map(int, trainer_name_box.split(','))
+                x7, y7 = map(int, register_btn.split(','))
+                self.Global_MouseClick(x6, y6)
+                time.sleep(0.8)
+                autoit.send('RerolledAccount')
+                time.sleep(1.2)
+                self.Global_MouseClick(x7, y7)
+                time.sleep(1.5)
+                # Confirm registration OK popup
+                if age_ok_btn:
+                    x5, y5 = map(int, age_ok_btn.split(','))
+                    for i in range(13):
+                        if not self.is_macro_started: return True
+                        self.Global_MouseClick(x5, y5)
+                        time.sleep(0.65)
+                return True  # Registration done
+
+            popup_steps = [
+                {
+                    'name': 'Terms of Consent',
+                    'region_key': 'term_of_consent_region',
+                    'keywords': ['terms of consent', 'consent', 'terms'],
+                    'action': handle_terms_of_consent
+                },
+                {
+                    'name': 'Country/Region',
+                    'region_key': 'common_popup_region',
+                    'keywords': ['country/region', 'country', 'region'],
+                    'action': handle_country_region
+                },
+                {
+                    'name': 'Age Confirmation',
+                    'region_key': 'common_popup_region',
+                    'keywords': ['age confirmation', 'confirmation', 'age', 'confirm'],
+                    'action': handle_age_confirmation
+                },
+                {
+                    'name': 'Trainer Registration',
+                    'region_key': 'common_popup_region',
+                    'keywords': ['trainer', 'registration', 'register'],
+                    'action': handle_trainer_registration
+                },
+            ]
+
+            registration_done = False
+            max_loops = 30  # Prevent infinite loop
+            loop_count = 0
+            while self.is_macro_started and not registration_done and loop_count < max_loops:
+                handled = False
+                for step in popup_steps:
+                    found = self.detect_common_popup_text(region_key=step['region_key'], keywords=step['keywords'], send_webhook_on_fail=False)
+                    if found:
+                        self.logger.info(f"[PopupLoop] {step['name']} popup detected, handling...")
+                        result = step['action']()
+                        handled = True
+                        if step['name'] == 'Trainer Registration' or result is True:
+                            registration_done = True
+                        break  # UI changed, restart detection loop
+                if not handled:
+                    self.logger.info('[PopupLoop] No known popup detected, waiting...')
+                    first = popup_steps[0]
+                    self.detect_common_popup_text(region_key=first['region_key'], keywords=first['keywords'], send_webhook_on_fail=True)
+                    time.sleep(1.5)
+                loop_count += 1
+            if not registration_done:
+                self.logger.warning('[PopupLoop] Registration not completed after max loops!')
         except Exception as e:
             self.logger.error(f'Error in register_user_account_loop: {e}')
             print(f'Error in register_user_account_loop: {e}') 
-
 
 def send_discord_notification(message, webhook_url, ping_user_id=None, status=None, description=None, ping_on_embed=False, ssr_details=None, is_summary=False, screenshot_path=None):
     now = datetime.datetime.now().strftime('%H:%M:%S')  # hh:mm:ss
@@ -2535,6 +2557,9 @@ def send_discord_notification(message, webhook_url, ping_user_id=None, status=No
     elif status == 'stop':
         title = f'**__Reroll stopped__** ({now})'
         color = 0xED4245  # red
+    elif status == 'popupfail':
+        title = f'**__Popup Fail__** ({now})'
+        color = 0xED4245
     elif status == 'summary':
         # Extract run number from message (e.g., '#1') or fallback to message
         m = re.search(r'#(\d+)', message)
@@ -2560,7 +2585,7 @@ def send_discord_notification(message, webhook_url, ping_user_id=None, status=No
         embed["fields"] = [
             {"name": "SSR Cards Pulled", "value": '\n'.join(ssr_lines), "inline": False}
         ]
-    # For summary, remove redundant description and only keep SSR Cards Pulled
+    # For summary, description for total SSR Cards Pulled
     if status == 'summary':
         if 'description' in embed:
             del embed['description']
