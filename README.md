@@ -43,7 +43,7 @@ Simply extract the folder, then run `start_macro.vbs` (inside the MACRO_HERE_OPE
 
 1. **Extract the release folder** anywhere you like.
 2. **Start the macro:**
-   - Double-click `.vbs` (located in "MACRO_HERE_OPEN_IT" folder)
+   - Double-click `start_macro.vbs` (located in "MACRO_HERE_OPEN_IT" folder)
    - _Tip: Create a desktop shortcut to `start_macro.vbs` for quick access!_ (RECOMMENDED)
 3. The macro GUI will open. Assign all required regions and clicks using the GUI tabs:
    - **Card regions** (for rarity detection)
