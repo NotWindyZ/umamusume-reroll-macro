@@ -15,7 +15,7 @@ A GUI-based automation macro for **Uma Musume Pretty Derby**
 
 👉 [**Download the latest release here**](https://github.com/NotWindyZ/umamusume-reroll-macro/releases)
 
-Simply extract the folder, then run `start_macro.bat` (inside the MACRO_HERE_OPEN_IT folder). No Python installation required! For further instruction please ahead to "🚀 How to Use" section!
+Simply extract the folder, then run `start_macro.vbs` (inside the MACRO_HERE_OPEN_IT folder). No Python installation required! For further instruction please ahead to "🚀 How to Use" section!
 
 ---
 
@@ -43,8 +43,8 @@ Simply extract the folder, then run `start_macro.bat` (inside the MACRO_HERE_OPE
 
 1. **Extract the release folder** anywhere you like.
 2. **Start the macro:**
-   - Double-click `start_macro.bat` (located in "MACRO_HERE_OPEN_IT" folder)
-   - _Tip: Create a desktop shortcut to `start_macro.bat` for quick access!_ (RECOMMENDED)
+   - Double-click `.vbs` (located in "MACRO_HERE_OPEN_IT" folder)
+   - _Tip: Create a desktop shortcut to `start_macro.vbs` for quick access!_ (RECOMMENDED)
 3. The macro GUI will open. Assign all required regions and clicks using the GUI tabs:
    - **Card regions** (for rarity detection)
    - **Macro reroll clicks**
@@ -356,27 +356,6 @@ If you have an **NVIDIA GPU with CUDA support**, you can install **PyTorch with 
 
 - **Discord notifications not sending?**  
   - Double-check your Discord webhook URL.
-
-- **Can't find `start_macro.bat`?**  
-  - If missing, create a `.bat` file with the following content in the "MACRO_HERE_OPEN_IT" folder:
-    ```bat
-    @echo off
-    REM === Disable QuickEdit Mode for current CMD session ===
-    REG ADD "HKCU\Console" /v QuickEdit /t REG_DWORD /d 0 /f >nul 2>&1
-    
-    REM === Always go into MACRO_HERE_OPEN_IT folder first ===
-    cd /d "%~dp0"
-    
-    REM === Run main.py with the root python.exe (one level up) ===
-    "..\python.exe" "main.py"
-    
-    echo.
-    echo Macro finished running.
-    pause
-
-    ```
-  - Then create a shortcut to this `.bat` on your desktop for easy access.
-
 ---
 
 ## 📦 Included Python Modules (for reference)
